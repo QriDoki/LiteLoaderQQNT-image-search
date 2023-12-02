@@ -3,7 +3,7 @@
     "type": "extension",
     "name": "搜图",
     "slug": "searchImg",
-    "description": "搜图",
+    "description": "图片的右键菜单里添加🔍搜图选项, 使用sauceNAO搜图, 在默认浏览器中打开结果页",
     "version": "1.0.0",
     "thumbnail": "./icon.png",
     "author": {
