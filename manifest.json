@@ -4,18 +4,18 @@
     "name": "搜图",
     "slug": "searchImg",
     "description": "搜图",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "thumbnail": "./icon.png",
     "author": {
         "name": "Qri",
         "link": "https://blog.ggemo.com"
     },
     "repository": {
-        "repo": "LiteLoaderQQNT/LiteLoaderQQNT-Plugin-Template",
+        "repo": "HHHHhgqcdxhg/LiteLoaderQQNT-image-search",
         "branch": "main",
         "use_release": {
             "tag": "latest",
-            "name": "Plugin-Template.zip"
+            "name": "LiteLoaderQQNT-image-search.zip"
         }
     },
     "platform": [
