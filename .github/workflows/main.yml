@@ -22,15 +22,6 @@ jobs:
       run: |
         npm install
 
-  package:
-    runs-on: ubuntu-latest
-
-    needs: build
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
     - name: Archive files
       run: |
         zip -r LiteLoaderQQNT-image-search.zip .
