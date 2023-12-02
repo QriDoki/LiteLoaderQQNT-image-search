@@ -1,14 +1,14 @@
 {
     "manifest_version": 3,
     "type": "extension",
-    "name": "插件模板",
-    "slug": "plugin_template",
-    "description": "LiteLoaderQQNT的插件模板",
+    "name": "搜图",
+    "slug": "searchImg",
+    "description": "搜图",
     "version": "0.1.0",
     "thumbnail": "./icon.png",
     "author": {
-        "name": "LiteLoaderQQNT",
-        "link": "https://github.com/LiteLoaderQQNT"
+        "name": "Qri",
+        "link": "https://blog.ggemo.com"
     },
     "repository": {
         "repo": "LiteLoaderQQNT/LiteLoaderQQNT-Plugin-Template",

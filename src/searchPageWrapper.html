@@ -1,26 +1,59 @@
-// 运行在 Electron 渲染进程 下的页面脚本
-// const { ipcRenderer } = require('electron');
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片转化为文件输入</title>
+</head>
+<body>
+<h1>图片转化为文件输入</h1>
+<img id="queryImg" src="">
+<canvas id="queryImgCanvas"></canvas>
+<script>
+    gogogo()
+    async function gogogo() {
+        const queryImg = document.getElementById('queryImg');
 
-const searchImageMenuItemTemplate = document.createElement("div");
-searchImageMenuItemTemplate.innerHTML = `
-<a 
- id="qrcode"
- class="q-context-menu-item q-context-menu-item--normal" 
- aria-disabled="false" 
- role="menuitem" 
- tabindex="-1">
-  <div class="q-context-menu-item__icon q-context-menu-item__head">
-    <i class="q-icon" data-v-717ec976="" style="--b4589f60: inherit; --6ef2e80d: 16px;">
-    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 80C0 53.5 21.5 32 48 32h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80zM64 96v64h64V96H64zM0 336c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V336zm64 16v64h64V352H64zM304 32h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H304c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48zm80 64H320v64h64V96zM256 304c0-8.8 7.2-16 16-16h64c8.8 0 16 7.2 16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16v96c0 8.8-7.2 16-16 16H368c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16v64c0 8.8-7.2 16-16 16H272c-8.8 0-16-7.2-16-16V304zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/></svg>
-    </i>
-  </div>
-  <!---->
-  <span class="q-context-menu-item__text">搜图</span>
-  <!---->
-</a>
-`
-// copy from sauceNAO
-const sauceNaoFormInnerText = `
+        // 获取名为q的查询参数的值
+        queryImg.src = getQueryParameter('q');
+        await delay(50)
+        const blob = await imgEl2Blob(queryImg)
+        submit(blob)
+    }
+    async function canvasToBlob(canvas) {
+        return new Promise((resolve) => {
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            });
+        });
+    }
+
+    async function imgEl2Blob(imgEl) {
+        console.log("imgEl", imgEl)
+        const canvas = document.querySelector("#queryImgCanvas");
+        const context = canvas.getContext('2d');
+
+        // 设置 Canvas 的尺寸与图片一致
+        canvas.width = imgEl.width;
+        canvas.height = imgEl.height;
+
+        // 将图片绘制到 Canvas 中
+        context.drawImage(imgEl, 0, 0);
+
+        const blob = await canvasToBlob(canvas)
+        console.log("blob", blob)
+        return blob
+    }
+
+    function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    // 获取id为queryImg的img元素
+
+
+
+
+    const sauceNaoFormInnerText = `
 <form id="searchForm" action="search.php" method="post" enctype="multipart/form-data" autocomplete="off" onsubmit="return(isSearchReady());">
 \t<div id="fileRowContainer">
 \t\t<div id="fileInputButton"><input id="fileInput" type="file" name="file" onchange="checkImageFile(this);" title="Browse to select an image to search with"><span id="fileInputLabel">Select Image</span></div>
@@ -77,87 +110,31 @@ const sauceNaoFormInnerText = `
 \t<input type="submit" value="SEARCH" id="searchButton" title="Start search for image source information">
 \t
 \t</div></form>`
-const sauceNaoFormElTemplate = document.createElement("div");
-sauceNaoFormElTemplate.innerHTML = sauceNaoFormInnerText
-sauceNaoFormElTemplate.querySelector("#searchForm").action = 'https://saucenao.com/search.php'
-sauceNaoFormElTemplate.querySelector("#searchForm").target = '_blank'
+    const sauceNaoFormElTemplate = document.createElement("div");
+    sauceNaoFormElTemplate.innerHTML = sauceNaoFormInnerText
+    sauceNaoFormElTemplate.querySelector("#searchForm").action = 'https://saucenao.com/search.php'
 
-async function addSearchImageMenu(qContextMenu, message_element) {
-    const {classList} = message_element
+    function submit(blob) {
+        const formWrapper = sauceNaoFormElTemplate.cloneNode(true)
 
-    if (classList?.[0] === "image-content") {
-        const searchImageMenuItem = searchImageMenuItemTemplate.cloneNode(true);
-        qContextMenu.insertBefore(searchImageMenuItem, qContextMenu.firstChild);
-        searchImageMenuItem.addEventListener('click', async () => {
-            ipcBridge.searchImg({imgSrc: message_element.src})
-            // 调用main, 打开默认浏览器
-            // console.log("点击咯!", qContextMenu, message_element)
-            // // ipcRenderer.send("trigger-open", "http://baidu.com")
-            // const blob = await imgEl2Blob(message_element)
-            // submit(blob)
-            // 关闭右键菜单
-            qContextMenu.remove()
-        })
+        // 创建一个 File 对象
+        const file = new File([blob], 'image.jpg', {type: blob.type});
+
+        // 创建一个 DataTransfer 对象，并将文件添加到其中
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+
+        const inputEl = formWrapper.querySelector("#fileInput")
+        // 将 DataTransfer 对象中的文件赋值给文件输入元素的 files 属性
+        inputEl.files = dataTransfer.files;
+        console.log(inputEl)
+        console.log(formWrapper)
+        const formNode = sauceNaoFormElTemplate.querySelector("#searchForm")
+        formNode.submit()
     }
-}
-
-function submit(blob) {
-    const formWrapper = sauceNaoFormElTemplate.cloneNode(true)
-
-    // 创建一个 File 对象
-    const file = new File([blob], 'image.jpg', {type: blob.type});
-
-    // 创建一个 DataTransfer 对象，并将文件添加到其中
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
-
-    const inputEl = formWrapper.querySelector("#fileInput")
-    // 将 DataTransfer 对象中的文件赋值给文件输入元素的 files 属性
-    inputEl.files = dataTransfer.files;
-    const formNode = sauceNaoFormElTemplate.querySelector("#searchForm")
-    window.formNode = formNode
-    window.inputEl = inputEl
-    const submitRes = formNode.submit()
-    console.log(submitRes)
-}
-
-async function canvasToBlob(canvas) {
-    return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-            resolve(blob);
-        });
-    });
-}
-
-async function imgEl2Blob(imgEl) {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    // 设置 Canvas 的尺寸与图片一致
-    canvas.width = imgEl.width;
-    canvas.height = imgEl.height;
-
-    // 将图片绘制到 Canvas 中
-    context.drawImage(imgEl, 0, 0);
-
-    const blob = await canvasToBlob(canvas)
-    return blob
-}
-
-// 页面加载完成时触发
-function onLoad() {
-    LLAPI.add_qmenu(addSearchImageMenu)
-}
-
-
-// 打开设置界面时触发
-function onConfigView(view) {
-
-}
-
-
-// 这两个函数都是可选的
-export {
-    onLoad,
-    onConfigView
-}
+    function delay(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+</script>
+</body>
+</html>
