@@ -24,7 +24,7 @@ jobs:
 
     - name: Archive files
       run: |
-        zip -r LiteLoaderQQNT-image-search.zip .
+        zip -r LiteLoaderQQNT-image-search.zip . -x "*.git*" -x "*.github*"
 
     - name: Create Release
       id: create_release
